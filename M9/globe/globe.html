@@ -114,6 +114,7 @@ svg
 			.enter()
 			.append("path")
 			.attr("d", path)
+			.attr("id", x => x.id)
 			.style("fill", "green")
 			.style("stroke", "#444")
 			.style("opacity", .7)

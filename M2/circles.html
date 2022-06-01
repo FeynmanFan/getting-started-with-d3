@@ -1,30 +1,81 @@
+﻿<!-- Friendly zoom feature -->
 <html>
 <head>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
+    <style type="text/css">
         svg {
             width: 1000px;
             height: 1000px;
+            border: 3px solid green;
+            transform-origin: 0 0;
         }
+        g.circleGroup{
+            background-color: blue;
+            fill: purple;
+            border: 2px solid orange;
+        }
+
     </style>
 </head>
     <body>
-        <script type='text/javascript'>
-            // 0, 2, 8, 1, 2
-            var currentX = 100;
-            var currentY = 100;
+        <script type="text/javascript">
+            var values = [0, 2, 8, 1, 2];
+            var initialX = 15;
+            var deltaX = 25;
+            var initialY = 15;
+            var deltaY = 25;
+
+            var currentX = initialX;
+            var currentY = initialY;
 
             var svg = d3.select("body")
                 .append("svg")
+                .attr("transform", "scale(8)")
+                ;
 
-            drawCircle(2);
-            drawCircle(8);
-            drawCircle(1);
-            drawCircle(2);
+            var gCircles = svg.append("g");
+            gCircles.attr("class", "circleGroup");
 
-            function drawCircle(radius) {
+            values.forEach(x => drawCircle(gCircles, x));
 
-                svg
+            currentX = initialX;
+            currentY += deltaY;
+
+            var gRect = svg.append("g");
+            gRect.attr("class", "rectangleGroup");
+
+            values.forEach(x => drawRectangle(gRect, x));
+
+            currentX = initialX;
+            currentY += deltaY;
+
+            var gcirclesProp = svg.append("g");
+            gcirclesProp.attr("class", "propCirclesGroup");
+
+            values.forEach(x => drawProportionalCircle(gcirclesProp, x));
+
+            function drawRectangle(gRect, radius) {
+                gRect
+                    .append("rect")
+                    .attr("fill", "red")
+                    .attr("width", 5)
+                    .attr("height", radius)
+                    .attr("x", currentX)
+                    .attr("y", currentY)
+                    ;
+
+                gRect.append("text")
+                    .text(radius)
+                    .attr("fill", "black")
+                    .attr("x", currentX)
+                    .attr("y", currentY)
+                    .attr("font-size", "3pt");
+
+                currentX += 25;
+            }
+
+            function drawCircle(gCircles, radius) {
+                gCircles
                     .append("circle")
                     .attr("fill", "red")
                     .attr("r", radius)
@@ -32,7 +83,33 @@
                     .attr("cy", currentY)
                     ;
 
-                currentX += 100;
+                gCircles.append("text")
+                    .text(radius)
+                    .attr("fill", "black")
+                    .attr("x", currentX)
+                    .attr("y", currentY)
+                    .attr("font-size", "3pt");
+
+                currentX += 25;
+            }
+
+            function drawProportionalCircle(gcirclesProp, radius) {
+                gcirclesProp
+                    .append("circle")
+                    .attr("fill", "red")
+                    .attr("r", Math.sqrt(radius))
+                    .attr("cx", currentX)
+                    .attr("cy", currentY)
+                    ;
+
+                gcirclesProp.append("text")
+                    .text(radius)
+                    .attr("fill", "black")
+                    .attr("x", currentX)
+                    .attr("y", currentY)
+                    .attr("font-size", "3pt");
+
+                currentX += 25;
             }
         </script>
     </body>
