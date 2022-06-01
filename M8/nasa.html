@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <script>
+        var nodes = [
+            { "name": "Alan Shepard", "nodeType": "A" },
+            { "name": "Freedom 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "Gus Grissom", "nodeType": "A" },
+            { "name": "Liberty Bell 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "Friendship 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "John Glenn", "nodeType": "A" },
+            { "name": "Aurora 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "Scott Carpenter", "nodeType": "A" },
+            { "name": "Sigma 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "Wally Schirra", "nodeType": "A" },
+            { "name": "Faith 7", "nodeType": "M", "program": "Mercury" },
+            { "name": "Gordon Cooper", "nodeType": "A" },
+            { "name": "Molly Brown", "nodeType": "M", "program": "Gemini" },
+            { "name": "John Young", "nodeType": "A" },
+            { "name": "Gemini 4", "nodeType": "M", "program": "Gemini" },
+            { "name": "James McDivitt", "nodeType": "A" },
+            { "name": "Edward White", "nodeType": "A" },
+            { "name": "Gemini 5", "nodeType": "M", "program": "Gemini" },
+            { "name": "Pete Conrad", "nodeType": "A" },
+            { "name": "Gemini 7a", "nodeType": "M", "program": "Gemini" },
+            { "name": "Thomas Stafford", "nodeType": "A" },
+            { "name": "Gemini 8", "nodeType": "M", "program": "Gemini" },
+            { "name": "Neil Armstrong", "nodeType": "A" },
+            { "name": "David Scott", "nodeType": "A" },
+            { "name": "Gemini 9a", "nodeType": "M", "program": "Gemini" },
+            { "name": "Eugene Cernan", "nodeType": "A" },
+            { "name": "Gemini 10", "nodeType": "M", "program": "Gemini" },
+            { "name": "Michael Collins", "nodeType": "A" },
+            { "name": "Gemini 11", "nodeType": "M", "program": "Gemini" },
+            { "name": "Richard Gordon", "nodeType": "A" },
+            { "name": "Gemini 12", "nodeType": "M", "program": "Gemini" },
+            { "name": "James Lovell", "nodeType": "A" },
+            { "name": "Edwin Aldrin", "nodeType": "A" }
+        ];
+
+        var links = [
+            { "source": "Freedom 7", "target": "Alan Shepard" },
+            { "source": "Liberty Bell 7", "target": "Gus Grissom" },
+            { "source": "Friendship 7", "target": "John Glenn" },
+            { "source": "Aurora 7", "target": "Scott Carpenter" },
+            { "source": "Sigma 7", "target": "Wally Schirra" },
+            { "source": "Faith 7", "target": "Gordon Cooper" },
+            { "source": "Molly Brown", "target": "Gus Grissom" },
+            { "source": "Molly Brown", "target": "John Young" },
+            { "source": "Gemini 4", "target": "James McDivitt" },
+            { "source": "Gemini 4", "target": "Edward White" },
+            { "source": "Gemini 5", "target": "Gordon Cooper" },
+            { "source": "Gemini 5", "target": "Pete Conrad" },
+            { "source": "Gemini 7a", "target": "Wally Schirra" },
+            { "source": "Gemini 7a", "target": "Thomas Stafford" },
+            { "source": "Gemini 8", "target": "Neil Armstrong" },
+            { "source": "Gemini 8", "target": "David Scott" },
+            { "source": "Gemini 9a", "target": "Thomas Stafford" },
+            { "source": "Gemini 9a", "target": "Eugene Cernan" },
+            { "source": "Gemini 10", "target": "John Young" },
+            { "source": "Gemini 10", "target": "Michael Collins" },
+            { "source": "Gemini 11", "target": "Pete Conrad" },
+            { "source": "Gemini 11", "target": "Richard Gordon" },
+            { "source": "Gemini 12", "target": "James Lovell" },
+            { "source": "Gemini 12", "target": "Edwin Aldrin" }
+        ];
+
+        var width = 2000;
+        var height = 1000;
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var g = svg.append("g");
+
+        var simulation = d3.forceSimulation().nodes(nodes);
+
+        // set up the forces
+        var link = d3.forceLink(links).id(function (d) { return d.name; }).distance(50).strength(1);
+        var charge = d3.forceManyBody().strength(-100);
+        var forceX = d3.forceX().x(width / 2).strength(.05);
+        var forceY = d3.forceY().y(height / 2).strength(.05);
+
+        // apply the forces
+        simulation
+            .force("link", link)
+            .force("charge", charge)
+            .force("forceX", forceX)
+            .force("forceY", forceY)
+            ;
+
+        //add tick instructions:
+        simulation.on("tick", simulation_tick);
+
+        var link = g
+            .selectAll("line")
+            .data(links)
+            .enter()
+            .append("line")
+            .attr("stroke-width", 2)
+            .attr("stroke", "#ddd");
+
+        //group the nodes together for easier ticking
+        var node = g.selectAll("g")
+            .data(nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragStart)
+                .on("drag", dragDone)
+            );
+
+        // add the node circle with the specific colors and radius
+        node
+            .append("circle")
+            .attr("r", radius)
+            .attr("fill", fillColor);
+
+        function radius(d) {
+            if (d.nodeType == "A") {
+                return 10;
+            } else {
+                if (d.program == "Mercury") {
+                    return 15;
+                }
+                else {
+                    return 24;
+                }
+            }
+        }
+
+        function fillColor(d) {
+            if (d.nodeType == "A") {
+                return "#FC3D21";
+            } else {
+                return "#0B3D91";
+            }
+        }
+
+        // add the name label
+        node
+            .append("text")
+            .attr("font-family", "Arial")
+            .attr("font-size", "8pt")
+            .attr("dx", "-30")
+            .attr("style", "fill:white;fill-opacity:1;stroke:#444444;stroke-width:.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;")
+            .text(function (d) { return d.name });
+
+        // attach the zoom handler
+        var zoom_handler = d3.zoom()
+            .on("zoom", zoom_actions);
+
+        zoom_handler(svg);
+
+        //Zoom functions
+        function zoom_actions() {
+            g.attr("transform", d3.zoomTransform(this))
+        }
+
+        function dragStart(event, d) {
+		
+            if (!event.active) simulation.alphaTarget(0.3).restart()
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragDone(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function simulation_tick() {
+            link
+                .attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+
+            node
+                .attr("transform", function (d) { return "translate(" + d.x + ", " + d.y + ")"; });
+        }
+    </script>
+</body>
+</html>

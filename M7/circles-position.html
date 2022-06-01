@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+		<style>
+            svg {
+                width: 1000px;
+                height: 1000px;
+                transform-origin: 0 0;
+            }
+
+            g.circleGroup {
+                background-color: blue;
+            }
+
+            .textLabel {
+                fill: black;
+                font-size: 3pt;
+            }
+		</style>
+	</head>
+	<body>
+		<script type='text/javascript'>
+			var serverUri = "https://localhost:61167";
+		
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("transform", "scale(8)")
+
+            var gCircles = svg.append("g")
+                .attr("class", "circleGroup")
+                //.call(zoom);
+
+            d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values));
+
+            var interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderSortedValues(values)), 5000);
+
+            function renderSortedValues(values) {
+                values = values.sort(function (a, b) {
+                    return a - b;
+                });
+
+                renderCircles(values);
+            }
+
+            var isRefreshing = true;
+
+            svg.on("click", function () {
+                if (isRefreshing) {
+                    interval.stop();
+                    isRefreshing = false;
+                } else {
+                    interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderSortedValues(values)),
+                        5000);
+                    isRefreshing = true;
+                }
+            });
+
+            var onZoom = d3.zoom()
+                .on("zoom", zoomFunction);
+
+            onZoom(svg);
+
+            svg
+                .transition().duration(5000)
+                .style("background", "blue")
+                .ease(d3.easeCubicInOut)
+                .transition().duration(5000)
+                .style("background", "yellow")
+
+            function zoomFunction() {
+                gCircles.attr("transform", d3.zoomTransform(this));
+            }
+
+            function renderCircles(values) {
+                var initialX = 15;
+                var deltaX = 25;
+                var initialY = 15;
+                var deltaY = 25;
+
+                var currentX = initialX;
+                var currentY = initialY;
+                
+                var circleElements = gCircles.selectAll("circle")
+                .data(values);
+
+                var textElements = gCircles.selectAll("text")
+                .data(values);
+
+                circleElements
+                    .enter()
+                    .append("circle")
+                    .attr("fill", "red")
+                    .attr("r", x => x)
+                    .transition()
+                    .duration(5000)
+                    .ease(d3.easeCubicInOut)
+                    .attr("cx", function (x) {
+                        var currentValue = currentX;
+                        currentX += deltaX;
+                        return currentValue;
+                    })
+                    .attr("cy", currentY);
+					
+					circleElements
+                    .merge(circleElements)
+                    .transition()
+                    .duration(1000)
+                    .attr("r", x => x)
+                    .attr("fill", x => x < 7 ? "green" : "red");
+
+                // reset to draw the labels
+                currentX = currentX - values.length * deltaX;
+
+                textElements
+                    .enter()
+                    .append("text")
+                    .text(x => x)
+                    .attr("class", "textLabel")
+                    .transition()
+                    .duration(1000)
+                    .attr("x", function (x) {
+                        var currentValue = currentX;
+                        currentX += deltaX;
+                        return currentValue;
+                    })
+                    .attr("y", currentY)
+                    .attr("dy", -3)
+                    .attr("dx", -1);
+					
+				textElements
+					.merge(textElements)
+                    .text(x => x)
+                    ;
+
+                currentX = initialX; //850;
+                currentY += deltaY;
+
+                /*var gRect = svg.append("g");
+                gRect.attr("class", "rectangleGroup");
+
+                values.forEach(x => drawRectangle(gRect, x));
+
+                currentX = initialX; //850;
+                currentY += deltaY;
+
+                var gCirclesProp = svg.append("g");
+                gCirclesProp.attr("class", "propCircleGroup");
+
+                values.forEach(x => drawProportionalCircle(x, gCirclesProp));*/
+
+                function drawLabel(g, value) {
+                    g.append("text")
+                        .text(value)
+                        .attr("class", "textLabel")
+                        .attr("x", currentX)
+                        .attr("y", currentY)
+                        .attr("dy", -3)
+                        .attr("dx", -1);
+                }
+
+                function drawACircle(radius, g) {
+                    g.append("circle")
+                        .attr("fill", "red")
+                        .attr("r", radius)
+                        .attr("cx", currentX)
+                        .attr("cy", currentY);
+                }
+
+                function drawCircle(radius, g) {
+                    drawACircle(radius, g);
+
+                    drawLabel(g, radius);
+
+                    currentX += deltaX;
+                }
+
+                function drawProportionalCircle(radius, g) {
+                    drawACircle(Math.sqrt(radius), g);
+
+                    drawLabel(g, radius);
+
+                    currentX += deltaX;
+                }
+
+                function drawRectangle(g, value) {
+                    g.append("rect")
+                        .attr("fill", "red")
+                        .attr("height", value)
+                        .attr("width", 5)
+                        .attr("x", currentX)
+                        .attr("y", currentY)
+                        .attr("transform-origin", currentX + "," + currentY)
+                        ;
+
+                    drawLabel(g, value);
+
+                    currentX += deltaX;
+                }
+            }
+		</script>
+	</body>
+</html>

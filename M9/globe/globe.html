@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<style>
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+svg
+{
+	border:1px solid gray;
+	opacity: 1;
+	background-color: black;
+}
+
+.water
+{
+	fill: #00248F;
+}
+
+</style>
+<body>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+	var cityData;
+	var radiusMap;
+
+	var width = 900;
+	var height = 900;
+	var margin = 100;
+
+	var sortedPopulations;
+
+	var rotationSpeed = .01;
+	var inclination = -23.5;
+
+	var radius = height / 2;
+    var velocity = .02;
+
+    const HorizonThreshold = 1.5;
+
+	var center = [width / 2, height / 2];
+
+	var svg = d3.select("body")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.append('g')
+				.attr('class', 'map');
+
+	var coordinateGroup = svg.append("g")
+				.attr("class", "coordinates");
+
+	var projection = d3.geoOrthographic()
+		.translate([width / 2, height / 2])
+		.scale(400)
+
+	var path = d3.geoPath().projection(projection);
+
+	svg.append("path")
+	  .datum({type: "Sphere"})
+	  .attr("class", "water")
+  	  .attr("d", path);
+
+	addGraticules(svg, path);
+
+	loadData();
+
+	function addGraticules(svg, path){
+		var graticule = d3.geoGraticule();
+		svg.append("path")
+			.datum(graticule)
+			.attr("class", "graticule")
+			.attr("d", path);
+	}
+
+	function loadData(){
+		var promises = [];
+
+		promises.push(d3.json("countries.json"));
+		promises.push(d3.csv("cbbcities.txt"));
+		Promise.all(promises).then(dataLoaded);
+	}
+
+	function getRadii(sortedPopulations){
+		var minPopulation = d3.min(sortedPopulations);
+		var maxPopulation = d3.max(sortedPopulations);
+
+		var interpolator = d3.interpolateNumber(3, 12);
+
+		var radii = [0];
+
+		sortedPopulations.forEach(
+			function(population)
+			{
+				radii.push(interpolator(population / maxPopulation));
+			}
+		);
+
+		return d3.scaleThreshold().domain(sortedPopulations).range(radii);
+	}
+
+	function dataLoaded(results) {
+		var countryData = results[0];
+		cityData = results[1];
+
+		svg.append("g")
+			.attr("class", "countries")
+			.style("fill", (d, i) => '#e5e5e5')
+			.selectAll("path")
+			.data(countryData.features)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			.style("fill", "green")
+			.style("stroke", "#444")
+			.style("opacity", .7)
+			.style("stroke-width",1);
+
+		sortedPopulations = cityData.filter(x => x.pop.length > 0).map(function(d){return parseInt(d.pop);}).sort(function(a,b){ return a - b});
+
+		radiusMap = getRadii(sortedPopulations);
+
+		d3.timer(function(elapsed) {
+			projection.rotate([rotationSpeed * elapsed - 120, inclination, 0]);
+			svg.selectAll("path").attr("d", path);
+
+			drawCoordinates();
+		});
+	}
+
+	function drawCoordinates() {
+		var coordinates = coordinateGroup.selectAll('circle').data(cityData);
+
+		coordinates
+			.enter()
+			.append('circle')
+			.merge(coordinates)
+			.attr("class", "coordinate")
+			.attr('cx', d => projection([d.long, d.lat])[0])
+			.attr('cy', d => projection([d.long, d.lat])[1])
+			.attr('fill', d => {
+                return getDistanceFromCenter(d.lat, d.long) > HorizonThreshold ? 'none' : 'goldenrod';
+			})
+			.attr('stroke', d => {
+                return getDistanceFromCenter(d.lat, d.long) > HorizonThreshold ? 'none' : 'black';
+			})
+			.attr('r', d => radiusMap(d.pop));
+
+		coordinateGroup.each(function () {
+			this.parentNode.appendChild(this);
+		});
+	}
+
+	function getDistanceFromCenter(lat, long){
+		var coordinate = [long, lat];
+		return d3.geoDistance(coordinate, projection.invert(center));
+	}
+</script>
+</body>
+</html>
+
+<!--
+us,los angeles,Los Angeles,CA,3877129,34.0522222,-118.2427778
+us,salt lake city,Salt Lake City,UT,178026,40.7608333,-111.8902778
+jp,tokyo,Tokyo,40,31480498,35.685,139.751389
+-->

@@ -1,0 +1,110 @@
+﻿<html>
+    <head>
+        <style>
+            .graticule {
+                fill: none;
+                stroke: #777;
+                stroke-width: .5px;
+                stroke-opacity: .5;
+            }
+
+            svg {
+                border: 1px solid gray
+            }
+
+            .title {
+                border: 1px solid gray;
+                fill: black;
+            }
+        </style>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+    <body>
+        <script>
+        var width = 900;
+        var height = 900;
+
+        var svg = d3.select("body")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .append('g')
+                    .attr('class', 'map');
+
+        var title = svg.append("text")
+	        .attr("class", "title")
+	        .text("South American Populations")
+	        .attr("stroke-width", "2px")
+	        .attr("font-size", "19pt")
+	        .attr("fill", "black")
+	        .attr("x", 500)
+	        .attr("y", 600)
+
+        var projection = d3.geoMercator()
+            .scale(500)
+            .translate([width, height / 4]);
+
+        var path = d3.geoPath().projection(projection);
+
+        addGraticules(svg, path);
+
+        loadData();
+
+        function loadData(){
+	        var promises = [];
+
+	        promises.push(d3.json("southamerica.json"));
+	        promises.push(d3.tsv("sapops.txt"));
+
+	        Promise.all(promises).then(dataLoaded);
+        }
+
+        function dataLoaded(results) {
+	        var countryData = results[0];
+	        var populationData = results[1];
+	        var populations = {};
+
+	        populationData.forEach(x => populations[x.id] = +x.population);
+
+	        var color = getColors(populationData);
+
+            svg.append("g")
+                .attr("class", "countries")
+                .selectAll("path")
+                .data(countryData.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .style("fill", x => color(populations[x.id]))
+		        .style("stroke", "black")
+		        .style("stroke-width",0.3);
+        }
+
+        function getColors(populationData){
+            var sortedPopulations = populationData
+                .map(x => parseInt(x.population))
+                .sort(function (a, b) {
+		        return parseInt(a) - parseInt(b);
+	        });
+
+	        var maxPopulation = d3.max(sortedPopulations);
+
+	        var oranges = ["white"]; // create lower bound for thresholds
+
+	        sortedPopulations.forEach(x => oranges.push(d3.interpolateOranges((x) / maxPopulation)));
+
+	        return d3.scaleThreshold()
+		        .domain(sortedPopulations)
+		        .range(oranges);
+        }
+
+        function addGraticules(svg, path){
+	        var graticule = d3.geoGraticule();
+	        svg.append("path")
+		        .datum(graticule)
+		        .attr("class", "graticule")
+		        .attr("d", path);
+        }
+        </script>
+    </body>
+</html>

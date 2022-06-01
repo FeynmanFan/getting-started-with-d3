@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+		<style>
+            svg {
+                width: 1000px;
+                height: 1000px;
+                transform-origin: 0 0;
+            }
+
+            g {
+                transform-origin: 0 0;
+            }
+
+            g.circleGroup{
+                background-color: blue;
+            }
+
+            .textLabel {
+                fill: black;
+                font-size: 3pt;
+            }
+		</style>
+	</head>
+	<body>
+		<script type='text/javascript'>
+            var values = [0, 2, 8, 1, 2];
+
+            // renderCircles(values);
+
+            d3.json("data.json").then(result => renderCircles(result))
+
+            function renderCircles(values) {
+                var initialX = 15;
+                var deltaX = 25;
+                var initialY = 15;
+                var deltaY = 25;
+
+                var currentX = initialX;
+                var currentY = initialY;
+
+                var svg = d3.select("body")
+                    .append("svg")
+
+                svg.attr("transform", "scale(8)");
+
+                var gCircles = svg.append("g");
+                gCircles.attr("class", "circleGroup");
+
+                values.forEach(x => drawCircle(x, gCircles));
+
+                currentX = initialX; //850;
+                currentY += deltaY;
+
+                var gRect = svg.append("g");
+                gRect.attr("class", "rectangleGroup");
+
+                values.forEach(x => drawRectangle(gRect, x));
+
+                currentX = initialX; //850;
+                currentY += deltaY;
+
+                var gCirclesProp = svg.append("g");
+                gCirclesProp.attr("class", "propCircleGroup");
+
+                values.forEach(x => drawProportionalCircle(x, gCirclesProp));
+
+                function drawLabel(g, value) {
+                    g.append("text")
+                        .text(value)
+                        .attr("class", "textLabel")
+                        .attr("x", currentX)
+                        .attr("y", currentY)
+                        .attr("dy", -3)
+                        .attr("dx", -1);
+                }
+
+                function drawACircle(radius, g) {
+                    g.append("circle")
+                        .attr("fill", "red")
+                        .attr("r", radius)
+                        .attr("cx", currentX)
+                        .attr("cy", currentY);
+                }
+
+                function drawCircle(radius, g) {
+                    drawACircle(radius, g);
+
+                    drawLabel(g, radius);
+
+                    currentX += deltaX;
+                }
+
+                function drawProportionalCircle(radius, g) {
+                    drawACircle(Math.sqrt(radius), g);
+
+                    drawLabel(g, radius);
+
+                    currentX += deltaX;
+                }
+
+                function drawRectangle(g, value) {
+                    g.append("rect")
+                        .attr("fill", "red")
+                        .attr("height", value)
+                        .attr("width", 5)
+                        .attr("x", currentX)
+                        .attr("y", currentY)
+                        .attr("transform-origin", currentX + "," + currentY)
+                        ;
+
+                    drawLabel(g, value);
+
+                    currentX += deltaX;
+                }
+            }
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+	</head>
+	<body>
+		<script>
+            var data = [
+                { value: 80, label: "% which looks like Pacman" },
+                { value: 20, label: "% which doesn't" }
+            ];
+
+            var width = 800,
+                height = 800,
+                radius = width / 2;
+
+            var pieArc = d3.arc()
+                .outerRadius(radius)
+                .innerRadius(radius * .2);
+
+            var labelArc = d3.arc()
+                .outerRadius(radius)
+                .innerRadius(0);
+
+            var pie = d3.pie()
+                .value(x => x.value);
+
+            var svg = d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ") rotate(0)");
+
+            var g = svg.selectAll("g")
+                .data(pie(data))
+                .enter()
+                .append("g")
+
+            g.append("path")
+                .attr("d", pieArc)
+                .style("fill", x => x.data.value == 80 ? "yellow" : "black")
+
+            g.append("text")
+                .attr("transform", x => "translate(" + labelArc.centroid(x) + ") rotate(-125)")
+                .attr("fill", "red")
+                .text(function (d) { return d.data.label; });
+        </script>
+	</body>
+</html>

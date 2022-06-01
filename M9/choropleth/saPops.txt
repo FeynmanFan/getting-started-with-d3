@@ -1,0 +1,14 @@
+id	name	population	
+ARG	 Argentina	44100000
+BOL	 Bolivia	10520000
+BRA	 Brazil	209100000
+CHL	 Chile	18006000
+COL	 Colombia	49755000
+ECU	 Ecuador	16279000
+GUF	 French Guiana(France)	262000
+GUY	 Guyana	747000
+PRY	 Paraguay	7003000
+PER	 Peru	32657800
+SUR	 Suriname	560000
+URY	 Uruguay	3310000
+VEN	 Venezuela	31568000

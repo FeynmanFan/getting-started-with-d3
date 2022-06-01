@@ -1,0 +1,283 @@
+<html>
+    <style>
+        svg{
+            border: 1px solid gray;
+        }
+        line {
+            fill: none;
+        }
+
+        .grid line {
+            stroke: lightgray;
+            stroke-opacity: 0.7;
+            shape-rendering: crispEdges;
+            
+        }
+
+    </style>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <span>Emphasize Lower Range</span>
+                </td>
+                <td>
+                    <input onchange="renderChart(this.value)" type="range" min=".1" max="5" value="1" step=".1" class="slider" id="myRange">
+                </td>
+                <td>
+                    <span>Emphasize Upper Range</span>
+                </td>
+            </tr>
+        </table>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+        <script>
+            renderChart(1);
+
+            function renderChart(exponent) {
+                d3.select("body").select("svg").remove();
+
+                var data = [{ date: "10/25/2018", value1: 1, value2: 0 },
+                { date: "10/26/2018", value1: 3, value2: 0 },
+                { date: "10/27/2018", value1: 0, value2: 25 },
+                { date: "10/28/2018", value1: 0, value2: 62 },
+                { date: "10/29/2018", value1: 5, value2: 5 },
+                { date: "10/30/2018", value1: 8, value2: 37 },
+                { date: "10/31/2018", value1: 7, value2: 12 },
+                { date: "11/01/2018", value1: 11, value2: 55 },
+                { date: "11/02/2018", value1: 23, value2: 44 },
+                { date: "11/03/2018", value1: 13, value2: 53 },
+                { date: "11/04/2018", value1: 15, value2: 18 },
+                { date: "11/05/2018", value1: 37, value2: 12 },
+                { date: "11/06/2018", value1: 32, value2: 60 },
+                { date: "11/07/2018", value1: 38, value2: 60 },
+                { date: "11/08/2018", value1: 42, value2: 60 },
+                { date: "11/09/2018", value1: 43, value2: 3 },
+                { date: "11/10/2018", value1: 21, value2: 3 },
+                { date: "11/11/2018", value1: 24, value2: 2 },
+                { date: "11/12/2018", value1: 50, value2: 15 },
+                { date: "11/13/2018", value1: 53, value2: 3 },
+                { date: "11/14/2018", value1: 59, value2: 15 },
+                { date: "11/15/2018", value1: 61, value2: 3 },
+                { date: "11/16/2018", value1: 62, value2: 19 }];
+
+                var margin = 50;
+
+                var width = 1024;
+                var height = 768;
+
+                var dataGroup = d3.select("body").append("svg")
+                    .attr("width", width + margin)
+                    .attr("height", height + 2 * margin)
+                    .append("g")
+                    .attr("transform", "translate(" + margin + ", " + margin + ")");
+
+                var parseTime = d3.timeParse("%m/%d/%Y");
+
+                data.forEach(function (d) {
+                    d.date = parseTime(d.date);
+
+                    delete d.value2;
+
+                    //if (d.value1 == 0) d.value1 = 1;
+                    //if (d.value2 == 0) d.value2 = 1;
+
+                    // add garbage data to the set to show how badly line charts handle colors
+                    /*d.RaptorGO2CoolantPressureValvePosition = parseInt(Math.random() * 62);
+                    d.value4 = parseInt(Math.random() * 62);
+                    d.value5 = parseInt(Math.random() * 62);*/
+                });
+
+                data = data.filter(x => x.date.getDay() > 0 && x.date.getDay() < 6);
+
+                var x = d3.scaleTime()
+                    .domain(d3.extent(data, function (d) { return d.date; }))
+                    .range([0, width])
+                    ;
+
+                var y = d3.scalePow()
+                    .domain(d3.extent(data, function (d) { return d.value1 }))
+                    .range([height, 0])
+                    .exponent(exponent).nice()
+                    ;
+
+                var propertyNames = [];
+
+                for (var name in data[0]) {
+                    if (name == "date") {
+                        continue;
+                    }
+                    propertyNames.push(name);
+                    console.log("Property: " + name);
+                }
+
+                var colors = d3.schemeCategory10;
+
+                for (var i = 0; i < propertyNames.length; i++) {
+                    plotVariable(propertyNames[i], colors[i]);
+                }
+
+                var xAxisGroup = dataGroup
+                    .append("g")
+                    .attr("class", "xAxisGroup")
+                    .attr("transform", "translate(0," + height + ")")
+
+                var xAxis = d3.axisBottom(x)
+                    .tickFormat(d3.timeFormat("%Y-%m-%d"))
+                    .tickSize(10);
+
+                xAxis(xAxisGroup);
+
+                var yAxisGroup = dataGroup
+                    .append("g")
+                    .attr("class", "yAxisGroup")
+
+                var yAxis = d3.axisLeft(y)
+                    .tickFormat(d => y.tickFormat(62, d3.format(",d"))(d)
+                    );
+
+                yAxis(yAxisGroup);
+
+                drawGridlines();
+                circlePoints(propertyNames, dataGroup);
+                drawLegend(propertyNames, dataGroup);
+
+                //var secondYScale = d3.scaleLinear()
+                //    .domain([500, 1000])
+                //    .range([height, 0])
+
+                //var secondYAxis = d3.axisLeft(secondYScale)
+                //    .ticks(20)
+
+                //var secondY = dataGroup.append("g")
+                //    .attr("transform", "translate(" + width + ",0)")
+                    
+                //    .call(secondYAxis)
+
+                d3.selectAll(".xAxisGroup .tick text")
+                    .attr("transform", "rotate(-15)")
+
+                function drawGridlines() {
+                    var yGridlines = d3.axisLeft(y)
+                        .ticks(30)
+                        .tickFormat("")
+                        .tickSize(-width);
+
+                    var gridy = dataGroup.append("g")
+                        .attr("class", "grid")
+                        .call(yGridlines)
+                        ;
+
+                    var xGridlines = d3.axisBottom(x)
+                        .ticks(30)
+                        .tickFormat("")
+                        .tickSize(height);
+
+                    var gridx = dataGroup.append("g")
+                        .attr("class", "grid")
+						.call(xGridline)
+						;
+                }
+
+                function plotVariable(propertyName, color) {
+                    var line = d3.line()
+                        .x(d => x(d.date))
+                        .y(d => y(d[propertyName])).curve(d3.curveMonotoneX)
+                        ;
+
+                    dataGroup.append("path")
+                        .data([data])
+                        .attr("fill", "none")
+                        .attr("stroke", color)
+                        .attr("d", line);
+                }
+
+                function drawLegend(propertyNames, dataGroup) {
+                    var legendElements = [];
+
+                    var legend = dataGroup
+                        .append("g")
+
+                    var elementHeight = 50;
+
+                    var xOrigin = 800;
+                    var yOrigin = 600 - elementHeight * propertyNames.length;
+                    var width = 200;
+                    var xMargin = 5;
+                    var yMargin = 20;
+                    
+                    var elementWidth = 100;
+
+                    var height = propertyNames.length * elementHeight +  2 * yMargin;
+
+                    legend
+                        .append("rect")
+                        .attr("x", xOrigin)
+                        .attr("y", yOrigin)
+                        .attr("fill", "white")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .attr("stroke", "gray");
+
+                    for (var i = 0; i < propertyNames.length; i++) {
+                        var element =
+                            {
+                                color: d3.schemeCategory10[i],
+                                title: propertyNames[i]
+                            }
+
+                        legendElements.push(element);
+                    }
+
+                    currentY = yOrigin + yMargin;
+
+                    legendElements.forEach(function (x) {
+                        legend.append("rect")
+                            .attr("fill", x.color)
+                            .attr("x", xOrigin + xMargin)
+                            .attr("y", currentY)
+                            .attr("width", elementWidth)                            
+                            .attr("height", elementHeight)                            
+                            .append("title")
+                            .text(x.title)
+
+                        var title = x.title.length < 8 ? x.title : x.title.substring(0, 8) + "...";
+
+                        legend.append("text")
+                            .text(title)
+                            .attr("font-size", "14pt")
+                            .attr("fill", x.color)
+                            .attr("x", xOrigin + xMargin)
+                            .attr("y", currentY)
+                            .attr("dx", elementWidth + xMargin)
+                            .attr("dy", yMargin);
+
+                        currentY += elementHeight;
+                        }
+                    );
+                }
+
+                function circlePoints(propertyNames, dataGroup) {
+                    var div = d3.select("body").append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
+
+                    data.forEach(function (point) {
+                        for (var i = 0; i < propertyNames.length; i++) {
+                            dataGroup
+                                .append("circle")
+                                .attr("fill", d3.schemeCategory10[i])
+                                .attr("r", 7)
+                                .attr("cx", x(point.date))
+                                .attr("cy", y(point[propertyNames[i]]))
+                                .append("title")
+                                .text("Date: " + d3.timeFormat("%Y-%m-%d")(point.date) + "\n" + propertyNames[i] + ": " + point[propertyNames[i]]);
+                        }
+                    });
+                }
+            }
+        </script>
+    </body>
+</html>

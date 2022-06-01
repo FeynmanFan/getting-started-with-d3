@@ -1,0 +1,8 @@
+country,asciicity,city,region,pop,lat,long
+us,fort worth,Fort Worth,TX,618119,32.7252778,-97.3205556
+us,north chicago,North Chicago,IL,37301,42.3255556,-87.8411111
+us,philadelphia,Philadelphia,PA,1453268,39.9522222,-75.1641667
+au,sydney,Sydney,02,4394585,-33.861481,151.205475
+kr,seoul,Seoul,11,10323448,37.5985,126.9783
+de,munich,Munich,02,1246133,48.1500,11.5833
+fr,paris,Paris,A8,2110694,48.866667,2.333333

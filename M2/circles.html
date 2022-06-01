@@ -1,0 +1,39 @@
+<html>
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        svg {
+            width: 1000px;
+            height: 1000px;
+        }
+    </style>
+</head>
+    <body>
+        <script type='text/javascript'>
+            // 0, 2, 8, 1, 2
+            var currentX = 100;
+            var currentY = 100;
+
+            var svg = d3.select("body")
+                .append("svg")
+
+            drawCircle(2);
+            drawCircle(8);
+            drawCircle(1);
+            drawCircle(2);
+
+            function drawCircle(radius) {
+
+                svg
+                    .append("circle")
+                    .attr("fill", "red")
+                    .attr("r", radius)
+                    .attr("cx", currentX)
+                    .attr("cy", currentY)
+                    ;
+
+                currentX += 100;
+            }
+        </script>
+    </body>
+</html>

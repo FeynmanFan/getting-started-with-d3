@@ -1,0 +1,14 @@
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\bin\Debug\netcoreapp2.1\DataServer.deps.json
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\bin\Debug\netcoreapp2.1\DataServer.runtimeconfig.json
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\bin\Debug\netcoreapp2.1\DataServer.runtimeconfig.dev.json
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\bin\Debug\netcoreapp2.1\DataServer.dll
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\bin\Debug\netcoreapp2.1\DataServer.pdb
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.csprojAssemblyReference.cache
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.csproj.CoreCompileInputs.cache
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.RazorAssemblyInfo.cache
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.RazorAssemblyInfo.cs
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.AssemblyInfoInputs.cache
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.AssemblyInfo.cs
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.RazorTargetAssemblyInfo.cache
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.dll
+C:\Users\chris\Google Drive\PluralSight\Getting Started with D3\Code\DataServer\DataServer\obj\Debug\netcoreapp2.1\DataServer.pdb
