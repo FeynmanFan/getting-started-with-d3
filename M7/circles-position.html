@@ -28,11 +28,10 @@
 
             var gCircles = svg.append("g")
                 .attr("class", "circleGroup")
-                //.call(zoom);
 
             d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values));
 
-            var interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderSortedValues(values)), 5000);
+            /*var interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderSortedValues(values)), 5000);
 
             function renderSortedValues(values) {
                 values = values.sort(function (a, b) {
@@ -53,7 +52,7 @@
                         5000);
                     isRefreshing = true;
                 }
-            });
+            });*/
 
             var onZoom = d3.zoom()
                 .on("zoom", zoomFunction);
@@ -100,8 +99,8 @@
                         return currentValue;
                     })
                     .attr("cy", currentY);
-					
-					circleElements
+
+                circleElements
                     .merge(circleElements)
                     .transition()
                     .duration(1000)
@@ -126,8 +125,8 @@
                     .attr("y", currentY)
                     .attr("dy", -3)
                     .attr("dx", -1);
-					
-				textElements
+
+                textElements
 					.merge(textElements)
                     .text(x => x)
                     ;
