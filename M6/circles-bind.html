@@ -24,10 +24,7 @@
 	</head>
 	<body>
 		<script type='text/javascript'>
-			var serverUri = "https://localhost:61167";
-		
             var values = [];
-
             var svg = d3.select("body")
                 .append("svg")
 
@@ -36,10 +33,14 @@
             var gCircles = svg.append("g");
             gCircles.attr("class", "circleGroup");
 
+            // renderCircles(values);
+
+            var serverUri = "https://localhost:61167";
+
             d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values));
 
-            var interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values)),
-                1000);
+            var interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values)), 
+                3000);
 
             var isRefreshing = true;
 
@@ -49,7 +50,8 @@
                     isRefreshing = false;
                 } else {
                     interval = d3.interval(x => d3.json(serverUri + "/api/Data/GetJsonCircles").then(values => renderCircles(values)),
-                        1000);
+                        3000);
+
                     isRefreshing = true;
                 }
             });
@@ -106,8 +108,8 @@
                         return currentValue;
                     })
                     .attr("y", currentY)
-                    .attr("dy", -3)
-                    .attr("dx", -1)
+                    .attr("dx", -3)
+                    .attr("dy", -1)
                     .merge(textElements)
                     .text(x => x);
 

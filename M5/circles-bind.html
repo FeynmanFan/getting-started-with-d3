@@ -24,7 +24,9 @@
 	</head>
 	<body>
 		<script type='text/javascript'>
-            var values = [];
+            var values = [0, 2, 8, 1, 2];
+
+            // renderCircles(values);
 
             d3.xml("data.xml").then(function (data) {
                 var values = [];
@@ -81,8 +83,8 @@
                         return currentValue;
                     })
                     .attr("y", currentY)
-                    .attr("dy", -3)
-                    .attr("dx", -1);
+                    .attr("dx", -3)
+                    .attr("dy", -1);
 
                 console.log(gCircles.selectAll("circle"));
 

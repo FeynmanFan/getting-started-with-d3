@@ -120,19 +120,6 @@
                 currentX = initialX; //850;
                 currentY += deltaY;
 
-                var gRect = svg.append("g");
-                gRect.attr("class", "rectangleGroup");
-
-                values.forEach(x => drawRectangle(gRect, x));
-
-                currentX = initialX; //850;
-                currentY += deltaY;
-
-                var gCirclesProp = svg.append("g");
-                gCirclesProp.attr("class", "propCircleGroup");
-
-                values.forEach(x => drawProportionalCircle(x, gCirclesProp));
-
                 function drawLabel(g, value) {
                     g.append("text")
                         .text(value)

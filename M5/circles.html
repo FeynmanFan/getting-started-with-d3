@@ -28,7 +28,15 @@
 
             // renderCircles(values);
 
-            d3.json("data.json").then(result => renderCircles(result))
+            d3.xml("data.xml").then(function (data) {
+                var values = [];
+
+                for (var i = 0; i < data.children[0].children.length; i++) {
+                    values.push(parseInt(data.children[0].children[i].innerHTML));
+                }
+
+                renderCircles(values);
+            });
 
             function renderCircles(values) {
                 var initialX = 15;
