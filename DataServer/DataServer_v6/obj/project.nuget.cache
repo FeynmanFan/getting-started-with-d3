@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OIwkM5MZGpxkCR2WyYwJ0sPhxtLpgIIl33DYu4VJlvAT6N4XgUZoxwCFVy1zlAHY/tvs1+W1cAgKssoBiVCFAg==",
+  "dgSpecHash": "4owhWqcBvPzfsI4Y9TjRCCqzXKTRye/u71mZu8TXuyHLP7ITQMomxVrb+PEHH8cYIQAq0bC0sRZgZgHSpwDpGQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\chris\\OneDrive\\Pluralsight\\GettIng Started with D3\\Code\\DataServer\\DataServer_v6\\DataServer_v6.csproj",
+  "projectFilePath": "C:\\code\\gswd3\\DataServer\\DataServer_v6\\DataServer_v6.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
